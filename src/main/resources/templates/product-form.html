@@ -1,15 +1,27 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Add Product</title>
+    <title>Product Form</title>
 </head>
 <body>
-<h1>Add Product</h1>
-<form action="/products" method="post" th:object="${product}">
-    <label>Name:</label>
-    <input type="text" th:field="*{name}" required>
-    <label>Price:</label>
-    <input type="number" step="0.01" th:field="*{price}" required>
+<h1 th:if="${product.id == null}">Add New Product</h1>
+<h1 th:if="${product.id != null}">Edit Product</h1>
+
+<form th:action="@{/products}" th:object="${product}" method="post">
+    <input type="hidden" th:field="*{id}"/>
+
+    <label for="name">Product Name:</label>
+    <input type="text" th:field="*{name}" id="name" required/>
+
+    <label for="price">Price:</label>
+    <input type="text" th:field="*{price}" id="price" required/>
+
+    <label for="description">Description:</label>
+    <input type="text" th:field="*{description}" id="description" required/>
+
+    <label for="quantity">Quantity:</label>
+    <input type="number" th:field="*{stockQty}" id="quantity" required/>
+
     <button type="submit">Save</button>
 </form>
 </body>

@@ -5,7 +5,6 @@ import com.example.csd230_test2_practical_Brock_McClelland.Repositories.ProductR
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/products")
@@ -36,24 +35,29 @@ public class ProductController {
     }
 
     @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable Long id, Model model) {
-        Optional<Product> product = productRepository.findById(id);
-        if (product.isPresent()) {
-            model.addAttribute("product", product.get());
-            return "product-form";
-        }
-        return "redirect:/products";
+    public String showEditForm(@PathVariable("id") Long id, Model model) {
+        Product product = productRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid product ID:" + id));
+        model.addAttribute("product", product);
+        return "product-form";
     }
 
-    @PostMapping("/update/{id}")
-    public String updateProduct(@PathVariable Long id, @ModelAttribute Product product) {
-        product.setId(id);
-        productRepository.save(product);
+    @PostMapping("/edit/{id}")
+    public String updateProduct(@PathVariable("id") Long id, @ModelAttribute Product product) {
+        Product existingProduct = productRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid product ID:" + id));
+
+        existingProduct.setName(product.getName());
+        existingProduct.setPrice(product.getPrice());
+        existingProduct.setDescription(product.getDescription());
+        existingProduct.setStockQty(product.getStockQty());
+
+        productRepository.save(existingProduct);
+
         return "redirect:/products";
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteProduct(@PathVariable Long id) {
+    public String deleteProduct(@PathVariable("id") Long id) {
         productRepository.deleteById(id);
         return "redirect:/products";
     }
